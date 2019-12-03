@@ -4,6 +4,7 @@ import static com.andresmr.android.tac.data.service.LogOutService.logOut;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,12 +34,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.example.android.androidskeletonapp.data.service.LogOutService.logOut;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CompositeDisposable compositeDisposable;
 
     private FloatingActionButton syncMetadataButton;
     private FloatingActionButton syncDataButton;
+    private FloatingActionButton uploadDataButton;
 
     private TextView syncStatusText;
     private ProgressBar progressBar;
@@ -74,6 +78,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return Sdk.d2().userModule().user().blockingGet();
     }
 
+    private User getUserFromCursor() {
+        try (Cursor cursor = Sdk.d2().databaseAdapter().query("SELECT * FROM user;")) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                return User.create(cursor);
+            } else {
+                return null;
+            }
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -96,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void inflateMainView() {
         syncMetadataButton = findViewById(R.id.syncMetadataButton);
         syncDataButton = findViewById(R.id.syncDataButton);
+        uploadDataButton = findViewById(R.id.uploadDataButton);
 
         syncStatusText = findViewById(R.id.notificator);
         progressBar = findViewById(R.id.syncProgressBar);
@@ -114,6 +129,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setAction("Action", null).show();
             syncStatusText.setText(R.string.syncing_data);
             downloadData();
+        });
+
+        uploadDataButton.setOnClickListener(view -> {
+            setSyncing();
+            Snackbar.make(view, "Uploading data", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            syncStatusText.setText(R.string.uploading_data);
+            uploadData();
         });
     }
 
@@ -134,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void disableAllButtons() {
         setEnabledButton(syncMetadataButton, false);
         setEnabledButton(syncDataButton, false);
+        setEnabledButton(uploadDataButton, false);
     }
 
     private void enablePossibleButtons(boolean metadataSynced) {
@@ -141,6 +165,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setEnabledButton(syncMetadataButton, true);
             if (metadataSynced) {
                 setEnabledButton(syncDataButton, true);
+                if (SyncStatusHelper.isThereDataToUpload()) {
+                    setEnabledButton(uploadDataButton, true);
+                }
             }
         }
     }
@@ -196,7 +223,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(Throwable::printStackTrace)
-                .doOnComplete(this::setSyncingFinished)
+                .doOnComplete(() -> {
+                    setSyncingFinished();
+                    ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this), false);
+                })
                 .subscribe());
     }
 
@@ -208,12 +238,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         compositeDisposable.add(
                 Observable.merge(
                         downloadTrackedEntityInstances(),
-                        downloadSingleEvents(),
                         downloadAggregatedData()
                 )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .doOnComplete(this::setSyncingFinished)
+                        .doOnComplete(() -> {
+                            setSyncingFinished();
+                            ActivityStarter.startActivity(this, TrackedEntityInstancesActivity.getTrackedEntityInstancesActivityIntent(this, null), false);
+                        })
                         .doOnError(Throwable::printStackTrace)
                         .subscribe());
     }
@@ -223,18 +255,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .limit(10).limitByOrgunit(false).limitByProgram(false).download();
     }
 
-    private Observable<D2Progress> downloadSingleEvents() {
-        return Sdk.d2().eventModule().eventDownloader()
-                .limit(10).limitByOrgunit(false).limitByProgram(false).download();
-    }
-
     private Observable<D2Progress> downloadAggregatedData() {
         return Sdk.d2().aggregatedModule().data().download();
     }
 
     private void uploadData() {
         compositeDisposable.add(
-                Sdk.d2().trackedEntityModule().trackedEntityInstances().upload()
+                Sdk.d2().fileResourceModule().fileResources().upload()
+                        .concatWith(Sdk.d2().trackedEntityModule().trackedEntityInstances().upload())
                         .concatWith(Sdk.d2().dataValueModule().dataValues().upload())
                         .concatWith(Sdk.d2().eventModule().events().upload())
                         .subscribeOn(Schedulers.io())
@@ -258,7 +286,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.navWipeData) {
+        if (id == R.id.navPrograms) {
+            ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this), false);
+        } else if (id == R.id.navTrackedEntities) {
+            ActivityStarter.startActivity(this, TrackedEntityInstancesActivity.getTrackedEntityInstancesActivityIntent(this, null), false);
+        } else if (id == R.id.navTrackedEntitiesSearch) {
+            ActivityStarter.startActivity(this, TrackedEntityInstanceSearchActivity.getIntent(this), false);
+        } else if (id == R.id.navDataSets) {
+            ActivityStarter.startActivity(this, DataSetsActivity.getIntent(this), false);
+        } else if (id == R.id.navDataSetInstances) {
+            ActivityStarter.startActivity(this, DataSetInstancesActivity.getIntent(this), false);
+        } else if (id == R.id.navD2Errors) {
+            ActivityStarter.startActivity(this, D2ErrorActivity.getIntent(this), false);
+        } else if (id == R.id.navFKViolations) {
+            ActivityStarter.startActivity(this, ForeignKeyViolationsActivity.getIntent(this), false);
+        } else if (id == R.id.navCodeExecutor) {
+            ActivityStarter.startActivity(this, CodeExecutorActivity.getIntent(this), false);
+        } else if (id == R.id.navWipeData) {
             syncStatusText.setText(R.string.wiping_data);
             wipeData();
         } else if (id == R.id.navExit) {
