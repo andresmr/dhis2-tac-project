@@ -22,7 +22,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -188,12 +187,11 @@
         app:layout_constraintTop_toBottomOf="@+id/greeting" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:context=".ui.main.MainActivity"
-        tools:layout_editor_absoluteX="204dp">
+        tools:context=".ui.main.MainActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -214,9 +212,19 @@
                 android:id="@+id/syncDataText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/sync_data"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/uploadDataText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/upload_data"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -227,20 +235,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
+            android:tint="@color/colorWhite"
             android:layout_marginStart="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin_with_text"
-            android:tint="@color/colorWhite"
             app:srcCompat="@drawable/ic_assignment_black_24dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/syncDataButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:tint="@color/colorWhite"
+            android:layout_marginBottom="@dimen/fab_margin_with_text"
+            app:srcCompat="@drawable/ic_person_black_24dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/uploadDataButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
+            android:tint="@color/colorWhite"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin_with_text"
-            android:tint="@color/colorWhite"
-            app:srcCompat="@drawable/ic_person_black_24dp" />
+            app:srcCompat="@drawable/ic_cloud_upload_black_24dp" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
