@@ -4,6 +4,8 @@ import com.andresmr.android.tac.data.Sdk;
 
 import org.hisp.dhis.android.core.common.State;
 
+import java.util.Collections;
+
 public class SyncStatusHelper {
 
     public static int programCount() {
@@ -25,5 +27,12 @@ public class SyncStatusHelper {
 
     public static int dataValueCount() {
         return Sdk.d2().dataValueModule().dataValues().blockingCount();
+    }
+
+    public static boolean isThereDataToUpload() {
+        return Sdk.d2().trackedEntityModule().trackedEntityInstances().byAggregatedSyncState()
+                .notIn(Collections.singletonList(State.SYNCED)).blockingCount() > 0 ||
+                Sdk.d2().dataValueModule().dataValues().bySyncState()
+                        .notIn(Collections.singletonList(State.SYNCED)).blockingCount() > 0;
     }
 }
