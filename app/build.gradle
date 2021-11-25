@@ -1,6 +1,7 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+    id "kotlin-kapt"
 }
 
 repositories {
@@ -41,8 +42,14 @@ android {
         sourceCompatibility = "8"
     }
 
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        compose true
+        dataBinding true
+        viewBinding true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.1'
     }
 
     configurations.all {
