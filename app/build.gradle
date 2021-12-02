@@ -1,6 +1,7 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+    id "kotlin-kapt"
 }
 
 repositories {
@@ -44,6 +45,7 @@ android {
     buildFeatures {
         compose true
         viewBinding true
+        dataBinding true
     }
 
     composeOptions {

@@ -11,4 +11,8 @@ public class ActivityStarter {
         if (finishCurrent)
             activity.finish();
     }
+
+    public static void startActivityForResult(AppCompatActivity activity, Intent intent, int requestCode){
+        activity.startActivityForResult(intent,requestCode);
+    }
 }

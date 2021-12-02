@@ -5,6 +5,8 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import org.hisp.dhis.android.core.common.CoreObject;
 
+import java.util.Objects;
+
 public class DiffByIdItemCallback<E extends CoreObject> extends DiffUtil.ItemCallback<E> {
 
     @Override
@@ -14,6 +16,6 @@ public class DiffByIdItemCallback<E extends CoreObject> extends DiffUtil.ItemCal
 
     @Override
     public boolean areContentsTheSame(@NonNull E oldItem, @NonNull E newItem) {
-        return oldItem == newItem;
+        return Objects.equals(oldItem, newItem);
     }
 }
