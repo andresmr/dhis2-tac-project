@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.andresmr.android.tac.R;
+import com.andresmr.android.tac.data.Sdk;
 import com.andresmr.android.tac.data.service.ActivityStarter;
 import com.andresmr.android.tac.ui.main.MainActivity;
+import com.andresmr.android.tac.ui.programs.ProgramsActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -74,7 +76,11 @@ public class LoginActivity extends AppCompatActivity {
                 showLoginFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
-                ActivityStarter.startActivity(this, MainActivity.getMainActivityIntent(this),true);
+                if (Sdk.d2().programModule().programs().blockingCount() > 0) {
+                    ActivityStarter.startActivity(this, ProgramsActivity.getProgramActivityIntent(this),true);
+                } else {
+                    ActivityStarter.startActivity(this, MainActivity.getMainActivityIntent(this),true);
+                }
             }
             setResult(Activity.RESULT_OK);
         });

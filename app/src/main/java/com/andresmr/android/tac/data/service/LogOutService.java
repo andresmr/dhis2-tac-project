@@ -2,8 +2,8 @@ package com.andresmr.android.tac.data.service;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.andresmr.android.tac.ui.login.LoginActivity;
 import com.andresmr.android.tac.data.Sdk;
+import com.andresmr.android.tac.ui.login.LoginActivity;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;

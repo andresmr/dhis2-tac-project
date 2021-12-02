@@ -1,7 +1,5 @@
 package com.andresmr.android.tac.ui.main;
 
-import static com.andresmr.android.tac.data.service.LogOutService.logOut;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,7 +17,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.andresmr.android.tac.R;
 import com.andresmr.android.tac.data.Sdk;
+import com.andresmr.android.tac.data.service.ActivityStarter;
 import com.andresmr.android.tac.data.service.SyncStatusHelper;
+import com.andresmr.android.tac.ui.code_executor.CodeExecutorActivity;
+import com.andresmr.android.tac.ui.d2_errors.D2ErrorActivity;
+import com.andresmr.android.tac.ui.data_sets.DataSetsActivity;
+import com.andresmr.android.tac.ui.data_sets.instances.DataSetInstancesActivity;
+import com.andresmr.android.tac.ui.foreign_key_violations.ForeignKeyViolationsActivity;
+import com.andresmr.android.tac.ui.programs.ProgramsActivity;
+import com.andresmr.android.tac.ui.tracked_entity_instances.TrackedEntityInstancesActivity;
+import com.andresmr.android.tac.ui.tracked_entity_instances.search.TrackedEntityInstanceSearchActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,7 +41,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.example.android.androidskeletonapp.data.service.LogOutService.logOut;
+import static com.andresmr.android.tac.data.service.LogOutService.logOut;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
